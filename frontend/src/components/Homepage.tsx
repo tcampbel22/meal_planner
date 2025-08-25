@@ -1,0 +1,36 @@
+import React, { useState } from "react";
+
+export const HomePage:React.FC = () => {
+	const [showList, setShowList] = useState<boolean>(false)
+
+ 	const mealList = [
+			"Red Curry with tofu",
+			"Veg Tacos",
+			"Beef Chili with rice",
+			"Butter Paneer with naan",
+			"Cauliflower pasta-bake",
+		]
+
+	const clicker = (showList: boolean) => {
+		if (showList)
+			setShowList(false)
+		else
+			setShowList(true)
+	}
+	return (
+		<>
+			<div className="flex flex-col justify-center items-center p-10 text-xl gap-y-4">
+				<h1 className="text-7xl font-black">Mealwise</h1>
+				<h2>Meal planning made easy</h2>
+				<button
+					onClick={() => clicker(showList)}
+					className="mt-40 mb-10 text-4xl border-4 p-8 bg-green-200 rounded-md hover:scale-110 hover:cursor-pointer transition ease-in-out">
+						Generate
+				</button>
+				{!showList ? mealList.map(l => {
+					return <ul className="text-lg/9">{l}</ul>
+				}) : (<p></p>)}
+			</div>
+		</>
+	)
+}

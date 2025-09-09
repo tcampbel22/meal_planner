@@ -1,4 +1,5 @@
 from sqlmodel import SQLModel, Field
+from pydantic import EmailStr
 
 # from sqlalchemy.dialects.postgresql import JSONB
 # from sqlalchemy import String
@@ -13,7 +14,7 @@ class Users(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     username: str = Field(index=True, unique=True)
     password: str
-    email: str
+    email: EmailStr = Field(unique=True)
     created_date: datetime = Field(
         default_factory=lambda: datetime.now(tz=timezone.utc)
     )

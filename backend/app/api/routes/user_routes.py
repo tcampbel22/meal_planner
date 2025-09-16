@@ -16,7 +16,9 @@ router = APIRouter()
 @router.get("/user/{id}")
 async def get_user(
     session: SessionDep,
-    id: uuid.UUID = Path(description="The id to identify the fetched user"),
+    id: uuid.UUID = Path(
+        title="User ID", description="The id to identify the fetched user"
+    ),
 ) -> UserRead:
     user = await get_user_by_id(id, session)
     if not user:

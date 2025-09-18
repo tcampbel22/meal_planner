@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, Path
 from sqlalchemy.exc import IntegrityError
-from database.database import SessionDep
-from api.schemas.user_schemas import NewUser, UserRead
+from app.database.database import SessionDep
+from app.api.schemas.user_schemas import NewUser, UserRead
 import uuid
-from api.services.user_services import (
+from app.api.services.user_services import (
     get_user_by_id,
     get_all_users,
     add_new_user,

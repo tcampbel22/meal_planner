@@ -9,13 +9,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 dotenv.load_dotenv(BASE_DIR / ".env")
 DATABASE_URL = os.getenv("DB_URL")
 
+
 engine = create_engine(DATABASE_URL, echo=True)
 
 
 def create_db_and_tables():
     try:
         SQLModel.metadata.create_all(engine)
-        print("Databases created successfully")
+        print("Database created successfully")
     except Exception as e:
         print(f"Failed to create databases: {e}")
 

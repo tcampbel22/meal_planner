@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from api.routes import user_routes
-from database.database import create_db_and_tables, shutdown
+from app.api.routes import user_routes
+from app.database.database import create_db_and_tables, shutdown
 from contextlib import asynccontextmanager
 
 

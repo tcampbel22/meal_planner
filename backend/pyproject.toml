@@ -8,4 +8,4 @@ target-version = ['py311']
 [tool.pytest.ini_options]
 addopts = "-ra --cov"
 testpaths = ["tests"]
-pythonpath = ['./backend/']
+pythonpath = ['.']

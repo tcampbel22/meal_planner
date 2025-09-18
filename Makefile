@@ -6,7 +6,30 @@ RESET = $$(printf '\033[0m')
 all: build
 
 logs:
-	@docker logs meal_planner_app_1
+	@docker logs mealwise_dev
+
+test-set-up:
+	@echo "-----| $(GREEN)Starting containers in test mode$(RESET) |-----"
+	@docker-compose -f docker-compose.test.yml up -d db
+
+test-run:
+	@echo "-----| $(GREEN)Running tests with pytest$(RESET) |-----"
+	@echo "-----------------------------------------------"
+	@pytest backend/tests
+	@echo "-----| $(RED)Tearing down test suite$(RESET) |-----"
+	@docker-compose -f docker-compose.test.yml down -v
+	@echo "---------------------------------------------"
+	@echo "-----| $(GREEN)Finished!$(RESET) |-----"
+
+test: test-set-up test-run
+
+dev:
+	@echo "-----| $(GREEN)Starting containers in dev mode$(RESET) |-----"
+	@docker-compose up -d dev_db
+	@docker-compose up app
+
+down:
+	@docker-compose down
 
 build:
 	@echo "-----| $(GREEN)Building meal planner$(RESET) |-----"
@@ -18,3 +41,5 @@ clean:
 	@docker-compose down
 
 re: clean build
+
+dev_re: clean dev

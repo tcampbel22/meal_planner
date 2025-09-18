@@ -1,8 +1,9 @@
-from database.models import Users
-from database.database import SessionDep
-from api.schemas.user_schemas import NewUser
+from app.database.models import Users
+from app.database.database import SessionDep
+from app.api.schemas.user_schemas import NewUser
 from sqlmodel import select
 import uuid
+import bcrypt
 
 
 async def get_user_by_id(id: uuid.UUID, session: SessionDep) -> Users:
@@ -14,7 +15,12 @@ async def get_all_users(session: SessionDep) -> list[Users]:
 
 
 async def add_new_user(user: NewUser, session: SessionDep) -> Users:
-    db_user = Users(**user.model_dump())
+    password = user.password
+    salt = bcrypt.gensalt()
+    hashed_pw = bcrypt.hashpw(password.encode("utf-8"), salt)
+    db_user = Users(
+        username=user.username, password=hashed_pw, email=user.email
+    )
     session.add(db_user)
     session.commit()
     session.refresh(db_user)

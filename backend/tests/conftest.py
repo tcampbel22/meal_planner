@@ -7,7 +7,6 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.database.models import Users  # noqa: F401
 
-os.environ["ENV"] = "test"
 
 load_dotenv(
     os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env.test")

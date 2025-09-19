@@ -10,10 +10,10 @@ dotenv.load_dotenv(BASE_DIR / ".env")
 
 
 def get_db_url():
-    if os.getenv("ENV") == "test":
-        return os.getenv("TEST_DB_URL")
-    else:
+    if os.getenv("ENV") == "dev":
         return os.getenv("DB_URL")
+    else:
+        return os.getenv("TEST_DB_URL")
 
 
 def get_engine():

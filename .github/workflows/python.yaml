@@ -48,7 +48,7 @@ jobs:
           cd backend
           echo "POSTGRES_USER=${{ secrets.TEST_USER }}" > .env.test
           echo "POSTGRES_PASSWORD=${{ secrets.TEST_PASSWORD }}" >> .env.test
-          echo "POSTGRES_DB=${{ env.TEST_DB }}" >> env.test
+          echo "POSTGRES_DB=${{ secrets.TEST_DB }}" >> .env.test
           echo "TEST_DB_URL=${{ secrets.TEST_DB_URL }}" >> .env.test
           echo "ENV=test" >> .env.test
       - name: Run unit tests

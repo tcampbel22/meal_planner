@@ -51,7 +51,7 @@ jobs:
           echo "POSTGRES_DB=${{ secrets.TEST_DB }}" >> .env.test
           echo "TEST_DB_URL=${{ secrets.TEST_DB_URL }}" >> .env.test
           echo "ENV=test" >> .env.test
+          cd ..
       - name: Run unit tests
         run: |
-          cd backend
-          pytest tests/
+          pytest backend/tests/

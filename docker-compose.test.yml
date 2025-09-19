@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:15.14
+    container_name: db_test
+    ports:
+      - "127.0.0.1:5433:5432"
+    env_file:
+      - ./backend/.env.test
+    volumes:
+      - mealwise-test-data:/var/lib/postgresql/data
+    networks:
+      - mealwise-test-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test -d db_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mealwise-test-data:
+
+networks:
+  mealwise-test-network:
+    name: mealwise-test-network

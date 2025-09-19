@@ -7,6 +7,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15.14
+        env:
+          POSTGRES_USER: ${{ secrets.TEST_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.TEST_DB }}
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3
@@ -17,15 +33,27 @@ jobs:
         run: |
           cd backend
           python -m pip install --upgrade pip
+          pip install -r requirements.txt
           pip install -r requirements-dev.txt
       - name: Lint with ruff
         run: |
           ruff check .
       - name: Check formatting with black
-        uses: psf/black@stable
+        uses: psf/black@25.9.0
         with:
           src: "."
-          options: "--check --verbose"
-      # - name: Run unit tests
-      #   run: |
-      #     pytest
+          options: "--verbose"
+      - name: Create env file
+        run: |
+          cd backend
+          USER="${{ secrets.TEST_USER }}"
+          PASS="${{ secrets.TEST_PASSWORD }}"
+          DB="${{ secrets.TEST_DB }}"
+          HOST="localhost:5433"
+          CONN="postgresql://"
+          echo "TEST_DB_URL=${CONN}${USER}:${PASS}@${HOST}/${DB}" > .env.test
+          echo "ENV=test" >> .env.test
+      - name: Run unit tests
+        run: |
+          cd backend
+          pytest tests/

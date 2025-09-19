@@ -1,9 +1,38 @@
-version: "3.8"
-
 services:
   app:
     build: ./backend
-    env_file:
-      - .env
+    container_name: mealwise_dev
     ports:
       - "8000:8000"
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
+    depends_on:
+      dev_db:
+        condition: service_healthy
+    networks:
+      - mealwise-dev-net
+  dev_db:
+    image: postgres:15.14
+    container_name: db_dev
+    ports:
+      - "127.0.0.1:5432:5432"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - mealwise-dev-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bob -d mealDB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mealwise-dev-net
+
+volumes:
+  mealwise-dev-data:
+
+networks:
+  mealwise-dev-net:
+    name: mealwise-dev-net

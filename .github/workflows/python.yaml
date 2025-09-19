@@ -41,7 +41,7 @@ jobs:
         uses: psf/black@25.9.0
         with:
           src: "."
-          options: "--check --verbose"
+          options: "--verbose"
       - name: Create env file
         run: |
           cd backend

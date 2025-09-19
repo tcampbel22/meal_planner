@@ -7,7 +7,9 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.database.models import Users  # noqa: F401
 
-load_dotenv("./backend/.env.test")
+load_dotenv(
+    os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env.test")
+)
 DATABASE_URL = os.getenv("TEST_DB_URL")
 engine = create_engine(DATABASE_URL)
 

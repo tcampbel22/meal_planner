@@ -46,12 +46,18 @@ jobs:
       - name: Create env file
         run: |
           cd backend
-          echo "POSTGRES_USER=${{ secrets.TEST_USER }}" > .env.test
-          echo "POSTGRES_PASSWORD=${{ secrets.TEST_PASSWORD }}" >> .env.test
-          echo "POSTGRES_DB=${{ secrets.TEST_DB }}" >> .env.test
-          echo "TEST_DB_URL=${{ secrets.TEST_DB_URL }}" >> .env.test
-          echo "ENV=test" >> .env.test
-          cd ..
+          echo "TEST_DB_URL=postgresql://"\
+            "${{ secrets.TEST_USER }}:"\
+            "${{ secrets.TEST_PASSWORD }}"\
+            "@localhost:5433/${{ secrets.TEST_DB }}" > .env.test
+      - name: Debug env
+        run: |
+          cd backend
+          echo "CWD: $(pwd)"
+          echo "Files in directory: $(ls -la)"
+          echo "Env file contents:"
+          cat .env.test | grep -v PASSWORD
       - name: Run unit tests
         run: |
-          pytest backend/tests/
+          cd backend
+          pytest tests/

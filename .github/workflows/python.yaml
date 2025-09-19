@@ -50,6 +50,7 @@ jobs:
             "${{ secrets.TEST_USER }}:"\
             "${{ secrets.TEST_PASSWORD }}"\
             "@localhost:5433/${{ secrets.TEST_DB }}" > .env.test
+          echo ENV=test > .env.test
       - name: Debug env
         run: |
           cd backend

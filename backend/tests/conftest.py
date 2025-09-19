@@ -1,17 +1,19 @@
 import pytest
 import os
 from dotenv import load_dotenv
-from sqlmodel import SQLModel, Session, create_engine
-from app.database.database import get_session
+from sqlmodel import SQLModel, Session
+from app.database.database import get_session, get_engine
 from fastapi.testclient import TestClient
 from app.main import app
 from app.database.models import Users  # noqa: F401
 
+os.environ["ENV"] = "test"
+
 load_dotenv(
     os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env.test")
 )
-DATABASE_URL = os.getenv("TEST_DB_URL")
-engine = create_engine(DATABASE_URL)
+
+engine = get_engine()
 
 
 @pytest.fixture(scope="session", autouse=True)

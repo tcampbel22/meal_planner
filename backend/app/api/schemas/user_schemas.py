@@ -3,14 +3,15 @@ import uuid
 import datetime
 
 
-class NewUser(BaseModel):
+class BaseUser(BaseModel):
     username: str = Field(min_length=3, max_length=20)
     email: EmailStr
-    password: str = Field(min_length=5)
 
 
-class UserRead(BaseModel):
+class UserOut(BaseUser):
     id: uuid.UUID
-    username: str
-    email: EmailStr
     created_date: datetime.datetime
+
+
+class NewUser(BaseUser):
+    password: str = Field(min_length=5)

@@ -53,13 +53,6 @@ jobs:
           CONN="postgresql://"
           echo "TEST_DB_URL=${CONN}${USER}:${PASS}@${HOST}/${DB}" > .env.test
           echo "ENV=test" >> .env.test
-      - name: Debug env
-        run: |
-          cd backend
-          echo "CWD: $(pwd)"
-          echo "Files in directory: $(ls -la)"
-          echo "Env file contents:"
-          cat .env.test | grep -v PASSWORD
       - name: Run unit tests
         run: |
           cd backend

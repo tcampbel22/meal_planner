@@ -1,5 +1,6 @@
 import os
 import dotenv
+import time
 from pathlib import Path
 from fastapi import Depends
 from typing import Annotated
@@ -16,21 +17,31 @@ def get_db_url():
         return os.getenv("DB_URL")
 
 
-def get_engine():
+def get_engine(max_retries=5, delay=2):
     if not hasattr(get_engine, "engine") or get_engine.engine is None:
         url = get_db_url()
         if not url:
             raise ValueError("No db URL found")
-        try:
-            get_engine.engine = create_engine(url, echo=True)
-            with get_engine.engine.connect():
-                pass
-            return get_engine.engine
-        except Exception as e:
-            print(f"Database connection failed: {e}")
-            raise RuntimeError(
-                f"Could not connect to database: {type(e).__name__}"
-            )
+
+        retries = 0
+        while retries < max_retries:
+            try:
+                get_engine.engine = create_engine(url, echo=True)
+                with get_engine.engine.connect():
+                    pass
+                return get_engine.engine
+            except Exception as e:
+                retries += 1
+                if retries < max_retries:
+                    print("INFO: Retrying connection")
+                    time.sleep(delay)
+                else:
+                    print(f"INFO: Database connection failed: {e}")
+                    raise RuntimeError(
+                        f"Could not connect to database: {type(e).__name__}"
+                    )
+    print("INFO: Database connected")
+    return get_engine.engine
 
 
 def create_db_and_tables():

@@ -34,12 +34,9 @@ down:
 build:
 	@echo "-----| $(GREEN)Building meal planner$(RESET) |-----"
 	@docker-compose build --no-cache
-	@docker-compose up -d
 
 clean:
 	@echo "-----| $(RED)Removing meal planner$(RESET) |-----"
 	@docker-compose down
 
-re: clean build
-
-dev_re: clean dev
+re: clean build dev

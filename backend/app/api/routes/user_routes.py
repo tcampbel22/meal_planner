@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, Path
-from sqlalchemy.exc import IntegrityError
 from app.database.database import SessionDep
-from app.api.schemas.user_schemas import NewUser, UserRead
+from app.api.schemas.user_schemas import NewUser, UserOut
 import uuid
 from app.api.services.user_services import (
     get_user_by_id,
@@ -13,36 +12,28 @@ from app.api.services.user_services import (
 router = APIRouter()
 
 
-@router.get("/user/{id}")
+@router.get("/user/{id}", response_model=UserOut)
 async def get_user(
     session: SessionDep,
     id: uuid.UUID = Path(
         title="User ID", description="The id to identify the fetched user"
     ),
-) -> UserRead:
-    user = await get_user_by_id(id, session)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+) -> UserOut:
+    return await get_user_by_id(id, session)
 
 
-@router.get("/user/")
-async def get_users(session: SessionDep) -> list[UserRead]:
+@router.get("/user/", response_model=list[UserOut])
+async def get_users(session: SessionDep) -> list[UserOut]:
     return await get_all_users(session)
 
 
 @router.post("/user/", status_code=201)
-async def add_user(user: NewUser, session: SessionDep) -> UserRead:
+async def add_user(user: NewUser, session: SessionDep) -> UserOut:
     if user.username is None or user.password is None or user.email is None:
-        raise HTTPException(status_code=400, detail="Mandatory values missing")
-    try:
-        return await add_new_user(user, session)
-    except IntegrityError:
-        raise HTTPException(status_code=409, detail="Username already exists")
+        raise HTTPException(status_code=422, detail="Mandatory values missing")
+    return await add_new_user(user, session)
 
 
-@router.delete("/user/{id}", status_code=204)
+@router.delete("/user/{id}", status_code=204, response_model=None)
 async def delete_user(id: uuid.UUID, session: SessionDep) -> None:
-    user = await delete_user_by_id(id, session)
-    if user == 404:
-        raise HTTPException(status_code=404, detail="User not found")
+    await delete_user_by_id(id, session)

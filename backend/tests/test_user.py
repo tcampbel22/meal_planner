@@ -12,7 +12,9 @@ class TestUserEndpoints:
         non_existing_id = "52f7deb4-a907-4e4e-ada3-518f87a7e524"
         res = client.get(f"{USER_URL}{non_existing_id}")
         assert res.status_code == 404
-        assert res.json() == {"detail": "User not found"}
+        assert res.json() == {
+            "detail": "User with 52f7deb4-a907-4e4e-ada3-518f87a7e524 not found"
+        }
 
     def test_get_user(self, client):
         users = client.get(USER_URL)

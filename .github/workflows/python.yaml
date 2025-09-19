@@ -38,7 +38,7 @@ jobs:
         run: |
           ruff check .
       - name: Check formatting with black
-        uses: psf/black@stable
+        uses: psf/black@25.9.0
         with:
           src: "."
           options: "--check --verbose"

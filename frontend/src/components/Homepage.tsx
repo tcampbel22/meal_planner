@@ -19,12 +19,11 @@ export const HomePage:React.FC = () => {
 	}
 	return (
 		<>
-			<div className="flex flex-col justify-center items-center p-10 text-xl gap-y-4">
-				<h1 className="text-7xl font-black">Mealwise</h1>
-				<h2>Meal planning made easy</h2>
+			<div className="flex flex-col justify-center items-center text-xl gap-y-4 h-full">
+				<h1 className="text-3xl mt-10">Meal planning made easy</h1>
 				<button
 					onClick={() => clicker(showList)}
-					className="mt-40 mb-10 text-4xl border-4 p-8 bg-green-200 rounded-md hover:scale-110 hover:cursor-pointer transition ease-in-out">
+					className="mt-20 mb-10 text-4xl border-4 p-8 bg-green-200 rounded-md hover:scale-110 hover:cursor-pointer transition ease-in-out">
 						Generate
 				</button>
 				{!showList ? mealList.map(l => {

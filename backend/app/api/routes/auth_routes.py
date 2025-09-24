@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.database.database import SessionDep
-from api.schemas.auth_schemas import LoginUser
-from api.services.auth_services import authenticate_user
+from app.api.schemas.auth_schemas import LoginUser
+from app.api.services.auth_services import authenticate_user
 
 router = APIRouter()
 
@@ -13,6 +13,7 @@ async def login_user(user: LoginUser, session: SessionDep):
             status_code=422, detail="Email or password field is empty"
         )
     try:
-        return await authenticate_user(user)
-    except Exception:
+        return await authenticate_user(user, session)
+    except Exception as e:
+        print(f"DEBUG: {e}")
         raise HTTPException(status_code=400, detail="Invalid login credentials")

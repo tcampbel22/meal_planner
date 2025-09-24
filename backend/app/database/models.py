@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import SQLModel, Field, Relationship, Column, LargeBinary
 from pydantic import EmailStr
 from typing import Optional
 from datetime import datetime, timezone
@@ -10,7 +10,7 @@ class Users(SQLModel, table=True):
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     username: str = Field(index=True, unique=True)
-    password: str
+    password: bytes = Field(sa_column=Column(LargeBinary, nullable=False))
     email: EmailStr = Field(unique=True)
     created_date: datetime = Field(
         default_factory=lambda: datetime.now(tz=timezone.utc)

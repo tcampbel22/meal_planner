@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Path, HTTPException
+from fastapi import APIRouter, Path, HTTPException, Depends
 from app.database.database import SessionDep
 from app.api.schemas.user_schemas import UserOut, AuthUser
+from app.auth import oauth2_scheme
+from typing import Annotated
 import uuid
 from app.api.services.user_services import (
     get_user_by_id,
@@ -15,6 +17,7 @@ router = APIRouter()
 @router.get("/{id}", response_model=UserOut)
 async def get_user(
     session: SessionDep,
+    token: Annotated[str, Depends(oauth2_scheme)],
     id: uuid.UUID = Path(
         title="User ID", description="The id to identify the fetched user"
     ),
@@ -35,5 +38,9 @@ async def add_user(user: AuthUser, session: SessionDep) -> UserOut:
 
 
 @router.delete("/{id}", status_code=204, response_model=None)
-async def delete_user(id: uuid.UUID, session: SessionDep) -> None:
+async def delete_user(
+    id: uuid.UUID,
+    session: SessionDep,
+    token: Annotated[str, Depends(oauth2_scheme)],
+) -> None:
     await delete_user_by_id(id, session)

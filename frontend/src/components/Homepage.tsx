@@ -27,7 +27,7 @@ export const HomePage:React.FC = () => {
 						Generate
 				</button>
 				{!showList ? mealList.map(l => {
-					return <ul className="text-lg/9">{l}</ul>
+					return <ul key={l} className="text-lg/9">{l}</ul>
 				}) : (<p></p>)}
 			</div>
 		</>

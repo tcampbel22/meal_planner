@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field, EmailStr
+from typing import Optional
 import uuid
 import datetime
 
@@ -13,5 +14,6 @@ class UserOut(BaseUser):
     created_date: datetime.datetime
 
 
-class NewUser(BaseUser):
+class AuthUser(BaseUser):
+    username: Optional[str] = None
     password: str = Field(min_length=5)

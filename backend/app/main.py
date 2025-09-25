@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from app.api.routes import user_routes
+from fastapi.middleware.cors import CORSMiddleware
+from app.api.routes import user_routes, auth_routes
 from app.database.database import create_db_and_tables, shutdown
 from contextlib import asynccontextmanager
 from app.utils.exceptions import (
@@ -21,7 +22,17 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-app.include_router(user_routes.router, prefix="/api")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["POST, GET, DELETE"],
+    allow_headers=["*"],
+)
+
+
+app.include_router(user_routes.router, prefix="/api/users")
+app.include_router(auth_routes.router, prefix="/api/auth")
 
 
 @app.exception_handler(UserNotFoundException)

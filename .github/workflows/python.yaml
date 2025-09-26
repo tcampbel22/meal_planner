@@ -53,6 +53,9 @@ jobs:
           CONN="postgresql://"
           echo "TEST_DB_URL=${CONN}${USER}:${PASS}@${HOST}/${DB}" > .env.test
           echo "ENV=test" >> .env.test
+          echo "TOKEN_EXPIRY=${{ secrets.TOKEN_EXPIRY }}" >> .env.test
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.test
+          echo "ALGORITHM=${{ secrets.ALGORITHM }}" >> .env.test
       - name: Run unit tests
         run: |
           cd backend

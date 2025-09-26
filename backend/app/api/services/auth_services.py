@@ -11,7 +11,7 @@ from os import getenv
 from datetime import timedelta
 from app.auth import verify_password
 
-TOKEN_EXP = int(getenv("TOKEN_EXPIRY"))
+TOKEN_EXP = int(getenv("TOKEN_EXPIRY", 10))
 
 
 async def authenticate_user(user: AuthUser, session: SessionDep) -> Token:

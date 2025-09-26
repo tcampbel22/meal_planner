@@ -16,7 +16,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-SECRET = os.getenv("JWT_SECRET")
+SECRET = os.getenv("JWT_SECRET", "test_secret_for_tests")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 
 

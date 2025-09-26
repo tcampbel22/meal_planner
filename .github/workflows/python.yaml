@@ -56,7 +56,14 @@ jobs:
           echo "TOKEN_EXPIRY=${{ secrets.TOKEN_EXPIRY }}" >> .env.test
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.test
           echo "ALGORITHM=${{ secrets.ALGORITHM }}" >> .env.test
-          echo "DEBUG ${TOKEN_EXPIRY}"
+                    echo "Checking .env.test contents:"
+          grep -v "SECRET\|PASSWORD" .env.test
+          echo "TOKEN_EXPIRY is set: $(grep -q 'TOKEN_EXPIRY=' .env.test && \
+          echo 'yes' || echo 'no')"
+          echo "JWT_SECRET is set: $(grep -q 'JWT_SECRET=' .env.test && \
+          echo 'yes' || echo 'no')"
+          echo "ALGORITHM is set: $(grep -q 'ALGORITHM=' .env.test && \
+          echo 'yes' || echo 'no')"
       - name: Run unit tests
         run: |
           cd backend

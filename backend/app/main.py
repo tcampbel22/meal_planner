@@ -31,8 +31,12 @@ app.add_middleware(
 )
 
 
-app.include_router(user_routes.router, prefix="/api/users")
-app.include_router(auth_routes.router, prefix="/api/auth")
+app.include_router(
+    user_routes.router, prefix="/api/users", tags=["user information"]
+)
+app.include_router(
+    auth_routes.router, prefix="/api/auth", tags=["authentication"]
+)
 
 
 @app.exception_handler(UserNotFoundException)
@@ -54,7 +58,10 @@ async def db_error_handler(request: Request, exc: DatabaseOperationException):
 async def invalid_credentials_handler(
     request: Request, exc: InvalidCredentialsException
 ):
-    return JSONResponse(status_code=401, content={"detail": str(exc)})
+    return JSONResponse(
+        status_code=401,
+        content={"headers": {"WWW-Authenticate": "Bearer"}, "detail": str(exc)},
+    )
 
 
 @app.exception_handler(ValidationException)

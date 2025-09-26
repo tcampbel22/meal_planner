@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Path, HTTPException
+from fastapi import APIRouter, Path, HTTPException, Depends
+from typing import Annotated
 from app.database.database import SessionDep
 from app.api.schemas.user_schemas import UserOut, AuthUser
 import uuid
+from app.auth import verify_current_user
 from app.api.services.user_services import (
     get_user_by_id,
     get_all_users,
@@ -23,7 +25,10 @@ async def get_user(
 
 
 @router.get("/", response_model=list[UserOut])
-async def get_users(session: SessionDep) -> list[UserOut]:
+async def get_users(
+    session: SessionDep,
+    current_user: Annotated[UserOut, Depends(verify_current_user)],
+) -> list[UserOut]:
     return await get_all_users(session)
 
 
@@ -38,5 +43,6 @@ async def add_user(user: AuthUser, session: SessionDep) -> UserOut:
 async def delete_user(
     id: uuid.UUID,
     session: SessionDep,
+    current_user: Annotated[UserOut, Depends(verify_current_user)],
 ) -> None:
     await delete_user_by_id(id, session)

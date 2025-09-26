@@ -16,12 +16,14 @@ test-run:
 	@echo "-----| $(GREEN)Running tests with pytest$(RESET) |-----"
 	@echo "-----------------------------------------------"
 	@pytest backend/tests
+
+test-down:
 	@echo "-----| $(RED)Tearing down test suite$(RESET) |-----"
 	@docker-compose -f docker-compose.test.yml down -v
 	@echo "---------------------------------------------"
 	@echo "-----| $(GREEN)Finished!$(RESET) |-----"
 
-test: test-set-up test-run
+test: test-set-up test-run test-down
 
 dev:
 	@echo "-----| $(GREEN)Starting containers in dev mode$(RESET) |-----"

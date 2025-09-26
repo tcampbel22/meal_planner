@@ -28,7 +28,7 @@ export const Login:React.FC = () => {
 				setError("Email or password is empty")
 				return
 			}
-			const response = await axios.post("http://localhost:8000/api/auth/login", loginPayload);
+			const response = await axios.post("http://localhost:8000/api/auth/token", loginPayload);
 			console.log("Login successful: ", response.data)
 			setInfo(`Login successful! Welcome ${response.data.username}`)
 			setTimeout(() => {

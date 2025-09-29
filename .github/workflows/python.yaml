@@ -56,7 +56,7 @@ jobs:
           echo "TOKEN_EXPIRY=${{ secrets.TOKEN_EXPIRY }}" >> .env.test
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.test
           echo "ALGORITHM=${{ secrets.ALGORITHM }}" >> .env.test
-                    echo "Checking .env.test contents:"
+          echo "Checking .env.test contents:"
           grep -v "SECRET\|PASSWORD" .env.test
           echo "TOKEN_EXPIRY is set: $(grep -q 'TOKEN_EXPIRY=' .env.test && \
           echo 'yes' || echo 'no')"

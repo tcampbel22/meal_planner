@@ -25,7 +25,7 @@ test-down:
 
 test: test-set-up test-run test-down
 
-dev:
+dev: build
 	@echo "-----| $(GREEN)Starting containers in dev mode$(RESET) |-----"
 	@docker-compose up -d dev_db
 	@docker-compose up app

@@ -11,6 +11,7 @@ import jwt
 from jwt.exceptions import ExpiredSignatureError
 import os
 from datetime import datetime, timezone, timedelta
+import uuid
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
 
@@ -43,7 +44,8 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
+    jti = str(uuid.uuid4())
+    to_encode.update({"jti": jti, "exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET, algorithm=ALGORITHM)
     return encoded_jwt
 
@@ -64,8 +66,11 @@ async def verify_current_user(
             raise InvalidCredentialsException
         return user
     except InvalidCredentialsException:
+        print("Invalid creds")
         raise
     except ExpiredSignatureError:
+        print("Token is expired")
         raise InvalidCredentialsException("Token is expired")
     except Exception as e:
+        print("Failed to verify user")
         raise InvalidCredentialsException(f"Failed to verify user: {e}")

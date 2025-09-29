@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import user_routes, auth_routes
+from app.redis_client import start_redis, close_redis
 from app.database.database import create_db_and_tables, shutdown
 from contextlib import asynccontextmanager
 from app.utils.exceptions import (
@@ -16,8 +17,10 @@ from app.utils.exceptions import (
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_db_and_tables()
+    start_redis()
     yield
     shutdown()
+    close_redis()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -26,7 +29,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
     allow_credentials=True,
-    allow_methods=["POST, GET, DELETE"],
+    allow_methods=["POST", "GET", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 

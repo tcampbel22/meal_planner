@@ -9,10 +9,13 @@ services:
     env_file:
       - ./backend/.env
     depends_on:
+      redis:
+        condition: service_healthy
       dev_db:
         condition: service_healthy
     networks:
       - mealwise-dev-net
+
   dev_db:
     image: postgres:15.14
     container_name: db_dev
@@ -24,6 +27,19 @@ services:
       - mealwise-dev-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U bob -d mealDB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mealwise-dev-net
+
+  redis:
+    image: redis:8.2.1-bookworm
+    container_name: redis_dev
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { handleUnauthenticated } from "../components/Auth";
+import { handleUnauthenticated } from "./authUtils";
 
 const API_URL = import.meta.env.VITE_API_URL;
 

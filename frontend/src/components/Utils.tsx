@@ -1,13 +1,13 @@
 import React from "react";
 
-type AuthInputProps = {
+type GenericInputProps = {
 	type: string;
 	placeholder: string;
 	value: string;
 	setValue: (value: string) => void;
 }
 
-const AuthInput:React.FC<AuthInputProps> = ({ type, placeholder, value, setValue }) => {
+const GenericInput:React.FC<GenericInputProps> = ({ type, placeholder, value, setValue }) => {
 	return (
 		<input
 			className="text-lg border border-1 bg-violet-100 rounded-sm pl-2 py-3"
@@ -19,4 +19,4 @@ const AuthInput:React.FC<AuthInputProps> = ({ type, placeholder, value, setValue
 	)
 }
 
-export default AuthInput
+export default GenericInput

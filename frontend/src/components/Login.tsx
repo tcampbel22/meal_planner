@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { GenericButton } from "./ButtonUtils";
 import { useNavigate } from "react-router-dom";
-import  AuthInput  from "./Utils"
-import { useAuth } from "./Auth";
+import { useAuth } from "../hooks/useAuth";
+import GenericInput from "./Utils";
 
 
 export const Login:React.FC = () => {
@@ -42,9 +42,14 @@ export const Login:React.FC = () => {
 				setPassword("")
 				navigate("/hub")
 			}, 1000)
+		} catch (loginError: unknown) {
+			setIsSubmitting(false)
 
-		} catch (loginError: any) {
-			setError(loginError.message)
+			if (loginError instanceof Error) {
+				setError(loginError.message)
+			} else {
+				setError("An unknown login error occurred")
+			}
 		}
 	}
 	return (
@@ -54,8 +59,8 @@ export const Login:React.FC = () => {
 				className="flex flex-col gap-y-6 my-8"
 				onSubmit={handleSubmit}
 				>
-				<AuthInput type="text" placeholder="Email address" value={email} setValue={setEmail}/>
-				<AuthInput type="password" placeholder="Password" value={password} setValue={setPassword}/>
+				<GenericInput type="text" placeholder="Email address" value={email} setValue={setEmail}/>
+				<GenericInput type="password" placeholder="Password" value={password} setValue={setPassword}/>
 				<GenericButton title={!isSubmitting ? "Sign In" : "Signing In"}/>
 			</form>
 			{error && (

@@ -1,48 +1,15 @@
-import React, { createContext, useState, useContext, useEffect, useCallback } from "react";
-import type { UUIDTypes } from "uuid";
-import axios from "axios";
+import { useState, useEffect, useCallback } from "react";
+import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
+import { setGlobalLogoutHandler, clearGlobalLogoutHandler } from "../utils/authUtils";
+import type { ReactNode } from "react";
+import { AuthContext } from "../context/authContext";
+import type { User } from "../context/authContext";
+import type { AxiosResponse } from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-type User = {
-    id: UUIDTypes;
-    email: string;
-    username: string;
-    recipes: [] | null;
-};
-
-type AuthContextType = {
-    user: User | null;
-    isLoggedIn: boolean;
-    isLoading: boolean;
-    error: string | null;
-    login: (email: string, password: string) => Promise<void>;
-    logout: () => void;
-    authGet: (url: string) => Promise<any>;
-
-};
-
-const AuthContext = createContext<AuthContextType>({
-    user: null,
-    isLoggedIn: false,
-    isLoading: false,
-    error: null,
-    login: async () => {},
-    logout: () => {},
-    authGet: async () => { throw new Error('Not implemented') },
-});
-
-let globalLogoutHandler: (() => void) | null = null;
-
-export const handleUnauthenticated = () => {
-  if (globalLogoutHandler) {
-    globalLogoutHandler();
-  }
-};
-
-import type { ReactNode } from "react";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
@@ -77,7 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsLoading(true);
         setError(null);
         try {
-            let loginPayload = new URLSearchParams()
+            const loginPayload = new URLSearchParams()
             loginPayload.append("username", email)
             loginPayload.append("password", password)
 
@@ -92,16 +59,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
             setIsLoggedIn(true)
             setUser(data)
-        } catch (error: any) {
-            console.error("Error: ", error.message)
-            setError("Login failed: Invalid password or username");
-            throw new Error("Login failed: Invalid password or username")
+        } catch (error: unknown) {
+            console.error("Error: ", error);
+
+            if (axios.isAxiosError(error)) {
+                const axiosError = error as AxiosError;
+                console.error("Error message:", axiosError.message);
+
+                if (axiosError.response?.status === 401) {
+                    setError("Login failed: Invalid password or username");
+                } else {
+                    setError(`Login failed: ${axiosError.message}`);
+                }
+            } else {
+                setError("Login failed: An unexpected error occurred");
+            }
+
+            throw new Error("Login failed: Invalid credentials or server error");
         } finally {
             setIsLoading(false);
           }
         };
 
-        const authGet = async (url: string) => {
+        const authGet = async (url: string): Promise<AxiosResponse> => {
             const token = sessionStorage.getItem('auth_token');
             if (!token)
                 throw new Error('Not authenticated');
@@ -123,7 +103,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             try {
 				const response = await api.post(`${API_URL}/auth/logout`);
                 console.log(response.data)
-            } catch (error) {
+            } catch (error: unknown) {
 				console.error("Logout error:", error);
             } finally {
 				sessionStorage.removeItem('auth_token');
@@ -133,9 +113,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 
         useEffect(() => {
-            globalLogoutHandler = logout;
+            setGlobalLogoutHandler(logout);
             return () => {
-                globalLogoutHandler = null;
+                clearGlobalLogoutHandler();
             };
         }, [logout]);
 
@@ -155,5 +135,3 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         </AuthContext.Provider>
     )
 }
-
-export const useAuth = () => useContext(AuthContext)

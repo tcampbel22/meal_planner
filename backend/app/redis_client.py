@@ -4,14 +4,12 @@ import os
 
 
 async def start_redis() -> aioredis.Redis:
-    # REDIS_URL = os.getenv("REDIS_URL", "redis://redis_dev:6379")
     ENV = os.getenv("ENV")
-    if ENV == "test":
+    if ENV != "dev":
         REDIS_URL = "redis://localhost:6380"
     else:
         REDIS_URL = "redis://redis_dev:6379"
     try:
-        print(f"DEBUG: {REDIS_URL}, {ENV}")
         redis_client = aioredis.from_url(REDIS_URL, decode_responses=True)
         await redis_client.ping()
         print("Connected to Redis!")

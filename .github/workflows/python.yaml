@@ -22,6 +22,10 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      redis:
+        image: redis:8.2.1-bookworm
+        ports:
+          - "6380:6379"
 
     steps:
       - uses: actions/checkout@v4

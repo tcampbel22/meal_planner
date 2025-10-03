@@ -26,6 +26,11 @@ jobs:
         image: redis:8.2.1-bookworm
         ports:
           - "6380:6379"
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4

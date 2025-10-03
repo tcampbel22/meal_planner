@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { GenericButton } from "./ButtonUtils";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import  AuthInput  from "./Utils"
-
+import { useAuth } from "../hooks/useAuth";
+import GenericInput from "./Utils";
 
 
 export const Login:React.FC = () => {
@@ -11,35 +10,46 @@ export const Login:React.FC = () => {
 	const [password, setPassword] = useState<string>("")
 	const [error, setError] = useState<string | null>("")
 	const [info, setInfo] = useState<string | null>("")
+	const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+
 	const navigate = useNavigate();
+	const { login, isLoggedIn } = useAuth();
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+
+		setError("");
+  		setInfo("");
+
 		setTimeout(() => {
 			setError("");
 			setInfo("")
 		}, 3000)
-		const loginPayload = {
-			email,
-			password
+		if (!email || !password) {
+			setError("Email or password is empty")
+			return
 		}
+		if (isLoggedIn || isSubmitting) {
+			return
+		}
+		setIsSubmitting(true)
 		try {
-			if (!email || !password) {
-				setError("Email or password is empty")
-				return
-			}
-			const response = await axios.post("http://localhost:8000/api/auth/login", loginPayload);
-			console.log("Login successful: ", response.data)
-			setInfo(`Login successful! Welcome ${response.data.username}`)
+			await login(email, password)
+			console.log("Login successful!")
+			setInfo(`Login successful!`)
 			setTimeout(() => {
 				setEmail("")
 				setPassword("")
-				navigate("/")
-			}, 2000)
-		} catch (error: any) {
-			console.error("Error: ", error.message)
-			setError("Invalid username or password")
-			return
+				navigate("/hub")
+			}, 1000)
+		} catch (loginError: unknown) {
+			setIsSubmitting(false)
+
+			if (loginError instanceof Error) {
+				setError(loginError.message)
+			} else {
+				setError("An unknown login error occurred")
+			}
 		}
 	}
 	return (
@@ -49,9 +59,9 @@ export const Login:React.FC = () => {
 				className="flex flex-col gap-y-6 my-8"
 				onSubmit={handleSubmit}
 				>
-				<AuthInput type="text" placeholder="Email address" value={email} setValue={setEmail}/>
-				<AuthInput type="password" placeholder="Password" value={password} setValue={setPassword}/>
-				<GenericButton title="Sign In"/>
+				<GenericInput type="text" placeholder="Email address" value={email} setValue={setEmail}/>
+				<GenericInput type="password" placeholder="Password" value={password} setValue={setPassword}/>
+				<GenericButton title={!isSubmitting ? "Sign In" : "Signing In"}/>
 			</form>
 			{error && (
 				<p className="text-red-600 font-semibold text-center">{error}</p>

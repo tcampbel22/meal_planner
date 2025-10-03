@@ -8,8 +8,8 @@ from app.utils.exceptions import (
 )
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
+from app.auth import hash_password
 import uuid
-import bcrypt
 
 
 async def get_user_by_id(id: uuid.UUID, session: SessionDep) -> UserOut:
@@ -36,11 +36,10 @@ async def get_all_users(session: SessionDep) -> list[UserOut]:
 
 async def add_new_user(user: AuthUser, session: SessionDep) -> UserOut:
     try:
-        salt = bcrypt.gensalt()
-        hashed_pw = bcrypt.hashpw(user.password.encode("utf-8"), salt)
+        hashed_pw = hash_password(user.password)
         db_user = Users(
             username=user.username,
-            password=hashed_pw.decode("utf-8"),
+            password=hashed_pw,
             email=user.email,
         )
         session.add(db_user)

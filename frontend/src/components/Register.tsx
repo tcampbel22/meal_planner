@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import AuthInput from "./Utils";
 import { GenericButton } from "./ButtonUtils";
 import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
+import GenericInput from "./Utils";
+
+const API_URL = import.meta.env.VITE_API_URL
 
 export const Register:React.FC = () => {
 	const [username, setUsername] = useState<string>("")
@@ -33,7 +35,7 @@ export const Register:React.FC = () => {
 				username,
 				password
 			}
-			const response = await axios.post("http://localhost:8000/api/users/", registerPayload)
+			const response = await axios.post(`${API_URL}/users/`, registerPayload)
 			console.log(`Registration successful for ${response.data.username}`)
 			setInfo("Registration successful!")
 			setEmail("")
@@ -44,7 +46,7 @@ export const Register:React.FC = () => {
 				navigate("/login")
 			}, 2000)
 
-		} catch (error: any) {
+		} catch (error: unknown) {
 			if (axios.isAxiosError(error)) {
 				const axiosError = error as AxiosError;
 				if (axiosError.response?.status == 409)
@@ -56,7 +58,7 @@ export const Register:React.FC = () => {
 			} else {
 				setError("Registration failed")
 			}
-			console.error(`Registration failed: ${error.message}`)
+			console.error(`Registration failed: ${error}`)
 			return
 		}
 	}
@@ -68,10 +70,10 @@ export const Register:React.FC = () => {
 				className="flex flex-col gap-y-6 my-8"
 				onSubmit={handleSubmit}
 				>
-				<AuthInput type="email" placeholder="Email address" value={email} setValue={setEmail}/>
-				<AuthInput type="username" placeholder="username" value={username} setValue={setUsername}/>
-				<AuthInput type="password" placeholder="Password" value={password} setValue={setPassword}/>
-				<AuthInput type="password" placeholder="Retype password" value={passwordCheck} setValue={setPasswordCheck}/>
+				<GenericInput type="email" placeholder="Email address" value={email} setValue={setEmail}/>
+				<GenericInput type="username" placeholder="username" value={username} setValue={setUsername}/>
+				<GenericInput type="password" placeholder="Password" value={password} setValue={setPassword}/>
+				<GenericInput type="password" placeholder="Retype password" value={passwordCheck} setValue={setPasswordCheck}/>
 				<GenericButton title="Register"/>
 			</form>
 			{error && (

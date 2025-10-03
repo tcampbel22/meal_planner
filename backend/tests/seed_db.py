@@ -1,5 +1,5 @@
 from app.database.models import Users
-import bcrypt
+from app.auth import hash_password
 
 users = [
     {"username": "bob", "email": "bob@hello.fi", "password": "12345"},
@@ -45,18 +45,12 @@ users = [
 ]
 
 
-def hash_pw(password) -> str:
-    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode(
-        "utf-8"
-    )
-
-
 def seed_users(session):
     for user in users:
         db_user = Users(
             username=user["username"],
             email=user["email"],
-            password=hash_pw(user["password"]),
+            password=hash_password(user["password"]),
         )
         session.add(db_user)
     session.commit()

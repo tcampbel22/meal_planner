@@ -32,6 +32,17 @@ def create_users():
         yield users
 
 
+@pytest.fixture()
+def auth_headers(client):
+    res = client.post(
+        "/api/auth/token",
+        data={"username": "bob@hello.fi", "password": "12345"},
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+    token = res.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
+
+
 @pytest.fixture(scope="function")
 def session():
     with Session(engine) as s:

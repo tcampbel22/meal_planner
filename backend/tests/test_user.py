@@ -1,25 +1,33 @@
+from utils import delete_user, get_users_length, get_all_users
+
 USER_URL = "/api/users/"
 
 
 class TestUserEndpoints:
-    def test_read_users(self, client):
-        res = client.get(USER_URL)
+    def test_read_users(self, client, auth_headers):
+        res = client.get(USER_URL, headers=auth_headers)
         assert res.status_code == 200
         assert len(res.json()) == 12
 
-    def test_non_existing_user(self, client):
+    def test_non_existing_user(self, client, auth_headers):
         non_existing_id = "52f7deb4-a907-4e4e-ada3-518f87a7e524"
-        res = client.get(f"{USER_URL}{non_existing_id}")
+        res = client.get(f"{USER_URL}{non_existing_id}", headers=auth_headers)
         assert res.status_code == 404
         assert res.json() == {
             "detail": "User with 52f7deb4-a907-4e4e-ada3-518f87a7e524 not found"
         }
 
-    def test_get_user(self, client):
-        users = client.get(USER_URL)
+    def test_get_users_with_invalid_token(self, client):
+        res = client.get(
+            USER_URL, headers={"Authorization": "Bearer invalid_token"}
+        )
+        assert res.status_code == 401
+
+    def test_get_user(self, client, auth_headers):
+        users = client.get(USER_URL, headers=auth_headers)
         id = users.json()[0]["id"]
         date = users.json()[0]["created_date"]
-        res = client.get(f"{USER_URL}{id}")
+        res = client.get(f"{USER_URL}{id}", headers=auth_headers)
         assert res.status_code == 200
         assert res.json() == {
             "id": id,
@@ -57,7 +65,9 @@ class TestUserEndpoints:
         )
         assert res.status_code == 422
 
-    def test_add_user(self, client):
+    def test_add_user(self, client, session):
+        assert get_users_length(session) == 12
+
         res = client.post(
             USER_URL,
             json={
@@ -66,6 +76,7 @@ class TestUserEndpoints:
                 "email": "test@test.com",
             },
         )
+
         body = res.json()
         id = body["id"]
         date = body["created_date"]
@@ -76,27 +87,26 @@ class TestUserEndpoints:
             "email": "test@test.com",
             "created_date": date,
         }
-        total = client.get(USER_URL)
-        assert len(total.json()) == 13
-        res = client.delete(f"{USER_URL}{id}")
-        assert res.status_code == 204
-        total = client.get(USER_URL)
-        assert len(total.json()) == 12
 
-    def test_delete_non_existing_user(self, client):
-        total = client.get(USER_URL)
-        assert len(total.json()) == 12
+        assert get_users_length(session) == 13
+
+        delete_user(id, session)
+        assert get_users_length(session) == 12
+
+    def test_delete_other_existing_user(self, client, auth_headers, session):
+        assert get_users_length(session) == 12
+
         non_existing_id = "52f7deb4-a907-4e4e-ada3-518f87a7e524"
-        res = client.delete(f"{USER_URL}{non_existing_id}")
-        assert res.status_code == 404
-        total = client.get(USER_URL)
-        assert len(total.json()) == 12
+        res = client.delete(
+            f"{USER_URL}{non_existing_id}", headers=auth_headers
+        )
+        assert res.status_code == 403
+        assert get_users_length(session) == 12
 
-    def test_delete_user(self, client):
-        total = client.get(USER_URL)
-        assert len(total.json()) == 12
-        id = total.json()[0]["id"]
-        res = client.delete(f"{USER_URL}{id}")
+    def test_delete_user(self, client, auth_headers, session):
+        assert get_users_length(session) == 12
+        users = get_all_users(session)
+        id = users[0].id
+        res = client.delete(f"{USER_URL}{id}", headers=auth_headers)
         assert res.status_code == 204
-        total = client.get(USER_URL)
-        assert len(total.json()) == 11
+        assert get_users_length(session) == 11

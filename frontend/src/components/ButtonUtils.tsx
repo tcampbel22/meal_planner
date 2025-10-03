@@ -11,7 +11,7 @@ type GenericButtonProps = {
 export const GenericButton:React.FC<GenericButtonProps> = ({ title }) => {
 	return (
 		<button
-			className="border-1 px-20 rounded-sm text-center py-3 hover:bg-violet-400 hover:scale-105 transition ease-in-out"
+			className="border-1 px-20 rounded-sm text-center py-3 hover:bg-violet-400 hover:cursor-pointer hover:scale-105 transition ease-in-out"
 		>
 			{title}
 		</button>

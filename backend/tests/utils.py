@@ -4,7 +4,7 @@ from app.database.models import Users
 from typing import Optional
 
 
-def delete_user(id: uuid.uuid4, session: Session) -> Optional[Users]:
+def delete_user(id: uuid.UUID, session: Session) -> Optional[Users]:
     user = session.get(Users, id)
     if user:
         session.delete(user)

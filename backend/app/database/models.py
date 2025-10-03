@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import SQLModel, Field, Relationship, UniqueConstraint
 from pydantic import EmailStr
 from typing import Optional
 from datetime import datetime, timezone
@@ -20,6 +20,9 @@ class Users(SQLModel, table=True):
 
 class Recipes(SQLModel, table=True):
     __tablename__ = "recipes"
+    __table_args__ = (
+        UniqueConstraint("user_id", "name", name="unique_user_recipe_name"),
+    )
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     user_id: uuid.UUID = Field(foreign_key="users.id")

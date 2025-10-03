@@ -1,9 +1,20 @@
 [tool.ruff]
 line-length = 80
+exclude = [
+    "alembic/",
+    "migrations/",
+    "alembic/**/*"
+]
 
 [tool.black]
 line-length = 80
 target-version = ['py311']
+extend-exclude = '''
+/(
+    alembic
+  | migrations
+)/
+'''
 
 [tool.pytest.ini_options]
 addopts = "-ra --cov"

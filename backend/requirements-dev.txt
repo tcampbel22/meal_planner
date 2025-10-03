@@ -5,3 +5,4 @@ pytest-cov==3.0.0
 pre-commit
 ruff
 yamllint
+alembic

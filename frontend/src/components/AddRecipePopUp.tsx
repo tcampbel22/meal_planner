@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import GenericInput from "./Utils";
 import { GenericButton } from "./ButtonUtils";
+import api from "../utils/api";
+import axios, {AxiosError } from "axios";
 
 type AddRecipePopUpProps = {
 	onClose: () => void;
@@ -36,13 +38,39 @@ export const AddRecipePopUp:React.FC<AddRecipePopUpProps> = ({ onClose }) => {
 			setError("Please fill in all fields")
 			return
 		}
+		const payload = {
+			recipeName,
+			recipeUrl,
+			portionSize,
+			cuisine
+		}
+		try {
+			//Not working at all
+			const response = api.post(`/recipes`, payload)
+			console.log(response)
+			setIsSubmitting(true)
+			setInfo("Recipe added successfully!")
+			setTimeout(() => {
+				onClose()
+			}, 2000)
 
-		//Add add recipe endpoint here
-		setIsSubmitting(true)
-		setInfo("Recipe added successfully!")
-		setTimeout(() => {
-			onClose()
-		}, 2000)
+		} catch (error: unknown){
+			if (axios.isAxiosError(error)) {
+				const axiosError = error as AxiosError;
+				if (axiosError.response?.status == 409)
+					setError("Recipe already exists")
+				else if (axiosError.response?.status == 422)
+					setError("Invalid recipe format")
+				else
+					setError("Failed to add recipe, please try again")
+			} else {
+				setError("Failed to add recipe")
+			}
+			setError("Failed to add recipe")
+			console.error(`Failed to add recipe: ${error}`)
+			return
+		}
+
 	}
 
 	return (

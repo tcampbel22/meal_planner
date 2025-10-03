@@ -1,0 +1,29 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^alembic/.*
+      - id: end-of-file-fixer
+        exclude: ^alembic/.*
+      - id: check-yaml
+      - id: check-added-large-files
+
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        exclude: ^alembic/.*
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.0.275
+    hooks:
+      - id: ruff-check
+        exclude: ^alembic/.*
+      - id: ruff-format
+        exclude: ^alembic/.*
+
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.32.0
+    hooks:
+      - id: yamllint

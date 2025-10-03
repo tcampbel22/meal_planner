@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, AnyUrl
+from pydantic import BaseModel, Field, AnyUrl, ConfigDict
 from typing import Optional
 import uuid
 import datetime
@@ -12,10 +12,13 @@ class RecipeBase(BaseModel):
 
 
 class RecipeCreate(RecipeBase):
-    pass
+    user_id: uuid.UUID
 
 
 class RecipeOut(RecipeBase):
     id: uuid.UUID
     user_id: uuid.UUID
     created_date: datetime.datetime
+    url: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)

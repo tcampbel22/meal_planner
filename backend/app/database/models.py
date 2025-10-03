@@ -25,7 +25,7 @@ class Recipes(SQLModel, table=True):
     user_id: uuid.UUID = Field(foreign_key="users.id")
     user: Users = Relationship(back_populates="recipes")
     url: Optional[str] = Field(default=None)
-    name: str = Field(unique=True, min_length=3, max_length=30)
+    name: str = Field(min_length=3, max_length=30)
     created_date: datetime = Field(
         default_factory=lambda: datetime.now(tz=timezone.utc)
     )

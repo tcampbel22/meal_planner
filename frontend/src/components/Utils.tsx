@@ -7,7 +7,7 @@ type GenericInputProps = {
 	minLength?: number;
 	maxLength?: number;
 	required?: boolean;
-	label: string;
+	label?: string;
 	setValue: (value: string) => void;
 }
 

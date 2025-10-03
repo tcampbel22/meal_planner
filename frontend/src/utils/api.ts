@@ -3,7 +3,7 @@ import { handleUnauthenticated } from "./authUtils";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const api =axios.create({
+const api = axios.create({
 	baseURL: API_URL
 });
 

@@ -11,16 +11,17 @@ from app.utils.exceptions import (
     DatabaseOperationException,
     ValidationException,
     InvalidCredentialsException,
+    NotAuthorisedException,
 )
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_db_and_tables()
-    start_redis()
+    app.state.redis = await start_redis()
     yield
     shutdown()
-    close_redis()
+    await close_redis(redis_client=app.state.redis)
 
 
 app = FastAPI(lifespan=lifespan)
@@ -50,6 +51,11 @@ async def user_not_found_handler(request: Request, exc: UserNotFoundException):
 @app.exception_handler(DuplicateException)
 async def duplicate_handler(request: Request, exc: DuplicateException):
     return JSONResponse(status_code=409, content={"detail": str(exc)})
+
+
+@app.exception_handler(NotAuthorisedException)
+async def not_authorised_handler(request: Request, exc: NotAuthorisedException):
+    return JSONResponse(status_code=403, content={"detail": str(exc)})
 
 
 @app.exception_handler(DatabaseOperationException)

@@ -11,7 +11,8 @@ from os import getenv
 from datetime import timedelta, timezone, datetime
 from app.auth import verify_password
 import jwt
-from app.redis_client import redis_client
+from redis import asyncio as aioredis
+
 
 TOKEN_EXP = int(getenv("TOKEN_EXPIRY", 10))
 SECRET = getenv("JWT_SECRET", "test_secret_for_tests")
@@ -40,9 +41,9 @@ async def authenticate_user(user: AuthUser, session: SessionDep) -> Token:
         raise DatabaseOperationException(f"Authentication error: {e}")
 
 
-async def logout_and_blacklist_token(token: str) -> None:
+async def logout_and_blacklist_token(token: str, redis: aioredis.Redis) -> None:
     payload = jwt.decode(token, SECRET, algorithms=[ALGORITHM])
     jti = payload.get("jti")
     exp = payload.get("exp")
     ttl = exp - int(datetime.now(timezone.utc).timestamp())
-    await redis_client.setex(f"blacklist:{jti}", ttl, "true")
+    await redis.setex(f"blacklist:{jti}", ttl, "true")

@@ -3,6 +3,7 @@ from typing import Annotated
 from app.database.database import SessionDep
 from app.api.schemas.user_schemas import UserOut, AuthUser
 import uuid
+from app.utils.exceptions import NotAuthorisedException
 from app.auth import verify_current_user
 from app.api.services.user_services import (
     get_user_by_id,
@@ -53,4 +54,6 @@ async def delete_user(
     session: SessionDep,
     current_user: Annotated[UserOut, Depends(verify_current_user)],
 ) -> None:
+    if current_user.id != id:
+        raise NotAuthorisedException("Naughty naughty... Not authorised")
     await delete_user_by_id(id, session)

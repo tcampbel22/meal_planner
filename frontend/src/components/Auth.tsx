@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const token = response.data.access_token;
             sessionStorage.setItem("auth_token", token);
 
-            const { data } = await api.get(`${API_URL}/users/current`)
+            const { data } = await api.get(`/users/current`)
 
             setIsLoggedIn(true)
             setUser(data)

@@ -16,3 +16,7 @@ class InvalidCredentialsException(Exception):
 
 class ValidationException(Exception):
     pass
+
+
+class NotAuthorisedException(Exception):
+    pass

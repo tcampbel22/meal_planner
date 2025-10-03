@@ -24,9 +24,10 @@ class Recipes(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     user_id: uuid.UUID = Field(foreign_key="users.id")
     user: Users = Relationship(back_populates="recipes")
-    url: Optional[str] = None
-    name: str
+    url: Optional[str] = Field(default=None)
+    name: str = Field(unique=True, min_length=3, max_length=30)
     created_date: datetime = Field(
         default_factory=lambda: datetime.now(tz=timezone.utc)
     )
-    default_portion: int = Field(default=2)
+    cuisine: str = Field(min_length=3, max_length=20)
+    default_portion: Optional[int] = Field(default=2)

@@ -16,6 +16,23 @@ class TestAuthentication:
         assert "access_token" in res.json()
         assert res.json()["token_type"] == "bearer"
 
+    def test_logout_user(self, client, auth_headers):
+        email = "bob@hello.fi"
+        password = "12345"
+
+        res = client.post(
+            f"{AUTH_URL}token",
+            data={"username": email, "password": password},
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+        assert res.status_code == 200
+        assert "access_token" in res.json()
+        assert res.json()["token_type"] == "bearer"
+
+        res = client.post(f"{AUTH_URL}logout", headers=auth_headers)
+        assert res.status_code == 200
+        assert res.json() == {"message": "User bob logged out"}
+
     def test_missing_password(self, client):
         res = client.post(
             f"{AUTH_URL}token",

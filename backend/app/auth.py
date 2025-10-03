@@ -3,7 +3,7 @@ from app.database.database import SessionDep
 from app.api.services.utils import get_user_by_email
 from app.utils.exceptions import InvalidCredentialsException
 from pydantic import BaseModel
-from passlib.context import CryptContext
+from pwdlib import PasswordHash
 from typing import Annotated
 from fastapi import Depends
 from app.api.schemas.user_schemas import UserOut
@@ -15,7 +15,7 @@ import uuid
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pw_context = PasswordHash.recommended()
 
 SECRET = os.getenv("JWT_SECRET", "test_secret_for_tests")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
@@ -31,11 +31,11 @@ class TokenData(BaseModel):
 
 
 def hash_password(password):
-    return pwd_context.hash(password)
+    return pw_context.hash(password)
 
 
 def verify_password(password, hash_password):
-    return pwd_context.verify(password, hash_password)
+    return pw_context.verify(password, hash_password)
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -66,7 +66,7 @@ async def verify_current_user(
             raise InvalidCredentialsException
         return user
     except InvalidCredentialsException:
-        print("Invalid creds")
+        print("Invalid credentials")
         raise
     except ExpiredSignatureError:
         print("Token is expired")

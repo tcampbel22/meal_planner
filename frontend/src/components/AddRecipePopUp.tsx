@@ -8,27 +8,31 @@ type AddRecipePopUpProps = {
 
 export const AddRecipePopUp:React.FC<AddRecipePopUpProps> = ({ onClose }) => {
 	const [recipeName, setRecipeName] = useState<string>("")
-	const [recipeUrl, setRecipeUrl] = useState<string>("")
-	const [portionSize, setPortionSize] = useState<string>("")
-	const [error, setError] = useState<string>("")
-	const [info, setInfo] = useState<string | null>("")
+	const [recipeUrl, setRecipeUrl] = useState<string>("http://")
+	const [portionSize, setPortionSize] = useState<number | string>(2)
+	const [cuisine, setCuisine] = useState<string>("")
+	const [error, setError] = useState<string | null>(null)
+	const [info, setInfo] = useState<string | null>(null)
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
-		setError("")
-		setInfo("")
+		setError(null)
+		setInfo(null)
 
 		setTimeout(() => {
-			setError("")
-			setInfo("")
-			setRecipeName("")
-			setRecipeUrl("")
-			setPortionSize("")
-			setIsSubmitting(false)
+				setError(null)
+				setInfo(null)
+				setRecipeName("")
+				setRecipeUrl("")
+				setPortionSize(2)
+				setCuisine("")
+				setIsSubmitting(false)
+
 		}, 2000)
 
-		if (!recipeName || !recipeUrl || !portionSize) {
+		if (!recipeName || !portionSize) {
 			setError("Please fill in all fields")
 			return
 		}
@@ -36,8 +40,9 @@ export const AddRecipePopUp:React.FC<AddRecipePopUpProps> = ({ onClose }) => {
 		//Add add recipe endpoint here
 		setIsSubmitting(true)
 		setInfo("Recipe added successfully!")
-		if (isSubmitting)
-			setTimeout(() => onClose(), 2000)
+		setTimeout(() => {
+			onClose()
+		}, 2000)
 	}
 
 	return (
@@ -48,12 +53,13 @@ export const AddRecipePopUp:React.FC<AddRecipePopUpProps> = ({ onClose }) => {
         	</div>
 				<h2 className="text-2xl font-bold">Add Recipe</h2>
 					<form
-						className="flex flex-col justify-center gap-y-6 mt-10 w-full px-10"
+						className="flex flex-col justify-center gap-y-6 w-full px-10 mt-10"
 						onSubmit={handleSubmit}
 						>
-						<GenericInput type="text" placeholder="Recipe name" value={recipeName} setValue={setRecipeName} />
-						<GenericInput type="text" placeholder="Recipe URL" value={recipeUrl} setValue={setRecipeUrl} />
-						<GenericInput type="text" placeholder="Portion size" value={portionSize} setValue={setPortionSize} />
+						<GenericInput type="text" placeholder="Spaghetti..." label="Recipe name*" value={recipeName} setValue={setRecipeName} required />
+						<GenericInput type="url" placeholder="Recipe URL" label="URL" value={recipeUrl} setValue={setRecipeUrl} />
+						<GenericInput type="number" placeholder="Portion size" label="Portions*" value={portionSize} setValue={setPortionSize} required/>
+						<GenericInput type="text" placeholder="Italian..." label="Cuisine" value={cuisine} setValue={setCuisine} />
 						<GenericButton title={!isSubmitting ? "Submit!" : "Submitting..."} />
 						{error && (<p className="text-red-600 font-semibold text-center">{error}</p>)}
 						{info && (<p className="text-green-600 font-semibold text-center">{info}</p>)}

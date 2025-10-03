@@ -4,6 +4,8 @@ import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import GenericInput from "./Utils";
 
+const API_URL = import.meta.env.VITE_API_URL
+
 export const Register:React.FC = () => {
 	const [username, setUsername] = useState<string>("")
 	const [email, setEmail] = useState<string>("")
@@ -33,7 +35,7 @@ export const Register:React.FC = () => {
 				username,
 				password
 			}
-			const response = await axios.post("http://localhost:8000/api/users/", registerPayload)
+			const response = await axios.post(`${API_URL}/users/`, registerPayload)
 			console.log(`Registration successful for ${response.data.username}`)
 			setInfo("Registration successful!")
 			setEmail("")

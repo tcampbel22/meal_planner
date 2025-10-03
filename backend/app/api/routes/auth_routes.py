@@ -9,6 +9,8 @@ from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from typing import Annotated
 from app.auth import Token, verify_current_user, oauth2_scheme
 from os import getenv
+from app.redis_client import get_redis
+from redis import asyncio as aioredis
 
 
 router = APIRouter()
@@ -41,6 +43,7 @@ async def logout_user(
     session: SessionDep,
     current_user: Annotated[UserOut, Depends(verify_current_user)],
     token: Annotated[str, Depends(oauth2_scheme)],
+    redis: Annotated[aioredis.Redis, Depends(get_redis)],
 ) -> None:
-    await logout_and_blacklist_token(token)
+    await logout_and_blacklist_token(token, redis)
     return {"message": f"User {current_user.username} logged out"}

@@ -15,7 +15,7 @@ from app.api.services.user_services import (
 router = APIRouter()
 
 
-@router.get("/current", response_model=UserOut)
+@router.get("/me", response_model=UserOut)
 async def get_current_user(
     session: SessionDep,
     current_user: Annotated[UserOut, Depends(verify_current_user)],

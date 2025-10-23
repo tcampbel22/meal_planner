@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { GenericButton } from "./ButtonUtils";
 import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
-import GenericInput from "./Utils";
+import { GenericInput } from "./Utils";
 
 const API_URL = import.meta.env.VITE_API_URL
 

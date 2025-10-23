@@ -1,4 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { ArrowSquareLeftIcon } from '@phosphor-icons/react'
+
 
 type GenericInputProps = {
 	type: string;
@@ -11,7 +14,11 @@ type GenericInputProps = {
 	setValue: (value: string) => void;
 }
 
-const GenericInput:React.FC<GenericInputProps> = ({
+type BackButtonProps = {
+	link: string;
+}
+
+export const GenericInput:React.FC<GenericInputProps> = ({
 	type,
 	placeholder,
 	value,
@@ -37,4 +44,24 @@ const GenericInput:React.FC<GenericInputProps> = ({
 	)
 }
 
-export default GenericInput
+export const SessionExpired:React.FC = () => {
+	return (
+		<div className="flex flex-col gap-y-10 justify-center items-center my-10">
+			<h1 className="text-2xl font-bold">Oho! Looks like your session expired</h1>
+				<Link
+					to={"/"}
+					className="p-4 border border-2 bg-violet-200 transition ease-in-out hover:scale-110">
+					Back to home
+				</Link>
+		</div>
+	)
+}
+
+export const BackButton:React.FC<BackButtonProps> = ( { link } ) => {
+	return (
+		<Link
+			to={link}
+			className={"transform hover:scale-110 transition-all duration-300 ease-in-out"}>
+			<ArrowSquareLeftIcon size={64} color={'#000000'}/>
+		</Link>	)
+}

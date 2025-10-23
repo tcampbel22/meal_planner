@@ -6,7 +6,7 @@ import os
 async def start_redis() -> aioredis.Redis:
     ENV = os.getenv("ENV")
     if ENV != "dev":
-        REDIS_URL = "redis://localhost:6380"
+        REDIS_URL = "redis://redis_test:6379"
     else:
         REDIS_URL = "redis://redis_dev:6379"
     try:

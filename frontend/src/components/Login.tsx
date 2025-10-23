@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { GenericButton } from "./ButtonUtils";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import GenericInput from "./Utils";
+import { GenericInput } from "./Utils";
 
 
 export const Login:React.FC = () => {

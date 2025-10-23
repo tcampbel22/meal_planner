@@ -10,7 +10,18 @@ logs:
 
 test-set-up:
 	@echo "-----| $(GREEN)Starting containers in test mode$(RESET) |-----"
-	@docker-compose -f docker-compose.test.yml up -d db
+	@docker-compose -f docker-compose.test.yml up -d db_test
+
+test-e2e:
+	@echo "-----| $(GREEN)Running e2e tests with selenium$(RESET) |-----"
+	@echo "-----------------------------------------------"
+	@docker-compose -f docker-compose.test.yml build
+	@docker-compose -f docker-compose.test.yml up -d db_test
+	@docker-compose -f docker-compose.test.yml up -d app_test
+
+	@pytest tests/e2e/
+	@echo "-----| $(RED)Tearing down e2e test suite$(RESET) |-----"
+	@docker-compose -f docker-compose.test.yml down -v
 
 test-run:
 	@echo "-----| $(GREEN)Running tests with pytest$(RESET) |-----"
@@ -23,7 +34,7 @@ test-down:
 	@echo "---------------------------------------------"
 	@echo "-----| $(GREEN)Finished!$(RESET) |-----"
 
-test: test-set-up test-run test-down
+test-unit: test-set-up test-run test-down
 
 dev: build
 	@echo "-----| $(GREEN)Starting containers in dev mode$(RESET) |-----"

@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           if (token) {
             setIsLoading(true);
             try {
-              const { data } = await api.get(`${API_URL}/users/current`);
+              const { data } = await api.get(`${API_URL}/users/me`);
               setUser(data);
               setIsLoggedIn(true);
             } catch (error) {
@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const token = response.data.access_token;
             sessionStorage.setItem("auth_token", token);
 
-            const { data } = await api.get(`/users/current`)
+            const { data } = await api.get(`/users/me`)
 
             setIsLoggedIn(true)
             setUser(data)

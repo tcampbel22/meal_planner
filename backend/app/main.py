@@ -1,7 +1,12 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import user_routes, auth_routes, recipe_routes
+from app.api.routes import (
+    user_routes,
+    auth_routes,
+    recipe_routes,
+    mealplan_routes,
+)
 from app.redis_client import start_redis, close_redis
 from app.database.database import create_db_and_tables, shutdown
 from contextlib import asynccontextmanager
@@ -43,6 +48,9 @@ app.include_router(
 )
 app.include_router(
     recipe_routes.router, prefix="/api/recipes", tags=["recipes"]
+)
+app.include_router(
+    mealplan_routes.router, prefix="/api/mealplans", tags=["meal planning"]
 )
 
 

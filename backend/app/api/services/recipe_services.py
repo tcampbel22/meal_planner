@@ -4,7 +4,12 @@ from app.api.schemas.recipe_schemas import RecipeOut, RecipeBase
 from app.api.schemas.user_schemas import UserOut
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from app.utils.exceptions import DatabaseOperationException, DuplicateException
+from app.utils.exceptions import (
+    DatabaseOperationException,
+    DuplicateException,
+    UserNotFoundException,
+)
+from app.database.models import Users
 
 
 async def get_all_recipes(session: SessionDep) -> list[RecipeOut]:
@@ -63,4 +68,19 @@ async def add_new_recipe(
         session.rollback()
         raise DatabaseOperationException(
             f"Failed to add recipe {recipe.name}: {e}"
+        )
+
+
+async def get_all_user_recipes(
+    user: UserOut, session: SessionDep
+) -> list[RecipeBase]:
+    try:
+        user = session.get(Users, user.id)
+        if not user:
+            raise UserNotFoundException(f"User with {user.id} not found")
+        return user.recipes
+    except Exception as e:
+        session.rollback()
+        raise DatabaseOperationException(
+            f"Failed to get user {user.username}: {e}"
         )

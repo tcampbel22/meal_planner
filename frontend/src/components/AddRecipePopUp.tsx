@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import GenericInput from "./Utils";
+import { GenericInput } from "./Utils";
 import { GenericButton } from "./ButtonUtils";
 import api from "../utils/api";
 import axios, {AxiosError } from "axios";
@@ -22,20 +22,11 @@ export const AddRecipePopUp:React.FC<AddRecipePopUpProps> = ({ onClose }) => {
 		e.preventDefault()
 		setError(null)
 		setInfo(null)
-
-		setTimeout(() => {
-				setError(null)
-				setInfo(null)
-				setRecipeName("")
-				setRecipeUrl("")
-				setPortionSize(2)
-				setCuisine("")
-				setIsSubmitting(false)
-
-		}, 2000)
+		setIsSubmitting(true)
 
 		if (!recipeName || !portionSize) {
 			setError("Please fill in all fields")
+			setIsSubmitting(false)
 			return
 		}
 		const payload = {
@@ -45,10 +36,9 @@ export const AddRecipePopUp:React.FC<AddRecipePopUpProps> = ({ onClose }) => {
 			cuisine
 		}
 		try {
-			//Not working at all
-			const response = api.post(`/recipes`, payload)
+			console.log(payload)
+			const response = await api.post(`/recipes`, payload)
 			console.log(response)
-			setIsSubmitting(true)
 			setInfo("Recipe added successfully!")
 			setTimeout(() => {
 				onClose()
@@ -66,10 +56,20 @@ export const AddRecipePopUp:React.FC<AddRecipePopUpProps> = ({ onClose }) => {
 			} else {
 				setError("Failed to add recipe")
 			}
-			setError("Failed to add recipe")
 			console.error(`Failed to add recipe: ${error}`)
-			return
-		}
+		} finally {
+            setTimeout(() => {
+                setError(null)
+                setInfo(null)
+                if (!error) {
+                    setRecipeName("")
+                    setRecipeUrl("http://")
+                    setPortionSize(2)
+                    setCuisine("")
+                }
+                setIsSubmitting(false)
+            }, 2000)
+        }
 
 	}
 

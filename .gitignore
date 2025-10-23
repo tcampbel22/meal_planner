@@ -4,3 +4,4 @@
 alembic
 alembic/versions
 alembic.ini
+tests/e2e/__pycache__/*

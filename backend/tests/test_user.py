@@ -34,6 +34,8 @@ class TestUserEndpoints:
             "username": "bob",
             "email": "bob@hello.fi",
             "created_date": date,
+            "recipes": [],
+            "mealplans": [],
         }
 
     def test_invalid_email(self, client):
@@ -86,6 +88,8 @@ class TestUserEndpoints:
             "username": "Test",
             "email": "test@test.com",
             "created_date": date,
+            "recipes": [],
+            "mealplans": [],
         }
 
         assert get_users_length(session) == 13

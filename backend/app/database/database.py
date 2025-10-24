@@ -26,7 +26,7 @@ def get_engine(max_retries=5, delay=2):
         retries = 0
         while retries < max_retries:
             try:
-                get_engine.engine = create_engine(url, echo=True)
+                get_engine.engine = create_engine(url)
                 with get_engine.engine.connect():
                     pass
                 return get_engine.engine

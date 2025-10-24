@@ -4,6 +4,7 @@ from app.auth import verify_current_user
 from typing import Annotated
 from app.api.schemas.user_schemas import UserOut
 from app.api.services.mealplan_services import generate_mealplan
+from app.api.schemas.mealplan_schemas import MealPlanOut
 
 
 router = APIRouter()
@@ -13,5 +14,5 @@ router = APIRouter()
 async def get_mealplan(
     session: SessionDep,
     current_user: Annotated[UserOut, Depends(verify_current_user)],
-) -> list:
+) -> list[MealPlanOut]:
     return await generate_mealplan(session, current_user)

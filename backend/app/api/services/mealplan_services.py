@@ -5,12 +5,12 @@ from app.utils.exceptions import (
 )
 from app.database.models import Users
 from app.api.schemas.user_schemas import UserOut
-from app.api.schemas.recipe_schemas import RecipeBase
+from app.api.schemas.mealplan_schemas import MealPlanOut
 
 
 async def generate_mealplan(
     session: SessionDep, user: UserOut
-) -> list[RecipeBase]:
+) -> list[MealPlanOut]:
     try:
         db_user = session.get(Users, user.id)
         if not db_user:

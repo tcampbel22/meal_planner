@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field, EmailStr
 from typing import Optional
 from app.api.schemas.recipe_schemas import RecipeOut
+from app.api.schemas.mealplan_schemas import MealPlanOut
 import uuid
 import datetime
 
@@ -13,7 +14,8 @@ class BaseUser(BaseModel):
 class UserOut(BaseUser):
     id: uuid.UUID
     created_date: datetime.datetime
-    recipes: list[RecipeOut]
+    recipes: list[RecipeOut] = []
+    mealplans: list[MealPlanOut] = []
 
 
 class AuthUser(BaseUser):

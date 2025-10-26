@@ -1,57 +1,72 @@
-from app.database.models import Users
+from app.database.models import Users, Recipes
 from app.auth import hash_password
-
-users = [
-    {"username": "bob", "email": "bob@hello.fi", "password": "12345"},
-    {
-        "username": "alice",
-        "email": "alice@example.com",
-        "password": "password1",
-    },
-    {
-        "username": "charlie",
-        "email": "charlie@example.com",
-        "password": "password2",
-    },
-    {"username": "dave", "email": "dave@example.com", "password": "password3"},
-    {"username": "eve", "email": "eve@example.com", "password": "password4"},
-    {
-        "username": "frank",
-        "email": "frank@example.com",
-        "password": "password5",
-    },
-    {
-        "username": "grace",
-        "email": "grace@example.com",
-        "password": "password6",
-    },
-    {
-        "username": "heidi",
-        "email": "heidi@example.com",
-        "password": "password7",
-    },
-    {"username": "ivan", "email": "ivan@example.com", "password": "password8"},
-    {"username": "judy", "email": "judy@example.com", "password": "password9"},
-    {
-        "username": "mallory",
-        "email": "mallory@example.com",
-        "password": "password10",
-    },
-    {
-        "username": "oscar",
-        "email": "oscar@example.com",
-        "password": "password11",
-    },
-]
+from sqlalchemy import select
 
 
 def seed_users(session):
-    for user in users:
+    created_users = []
+
+    bob_user = Users(
+        username="bob",
+        email="bob@hello.fi",
+        password=hash_password("12345"),
+        recipes=[],
+        mealplans=[],
+    )
+    session.add(bob_user)
+    created_users.append(bob_user)
+
+    for i in range(1, 12):
         db_user = Users(
-            username=user["username"],
-            email=user["email"],
-            password=hash_password(user["password"]),
+            username=f"user{i}",
+            email=f"user{i}@example.com",
+            password=hash_password(f"password{i}"),
+            recipes=[],
+            mealplans=[],
         )
         session.add(db_user)
+        created_users.append(db_user)
+
     session.commit()
-    return users
+    for user in created_users:
+        session.refresh(user)
+
+    return created_users
+
+
+def seed_recipes(session):
+    query = select(Users).where(Users.username == "bob")
+    user = session.exec(query).scalar_one_or_none()
+
+    if not user:
+        raise Exception(
+            "User 'bob' not found. Make sure user seeding runs first."
+        )
+
+    recipes_to_create = [
+        Recipes(
+            name="Pasta Carbonara",
+            url="https://www.italy.com",
+            cuisine="Italian",
+            user_id=user.id,
+        ),
+        Recipes(
+            name="Chicken Curry",
+            url="https://www.india.com",
+            cuisine="Indian",
+            user_id=user.id,
+        ),
+        Recipes(
+            name="Tacos",
+            url="https://www.mexico.com",
+            cuisine="Mexican",
+            user_id=user.id,
+        ),
+    ]
+
+    session.add_all(recipes_to_create)
+    session.commit()
+    for recipe in recipes_to_create:
+        session.refresh(recipe)
+
+    return recipes_to_create

@@ -1,3 +1,7 @@
 .coverage
 .pytest_cache
 .ruff_cache
+alembic
+alembic/versions
+alembic.ini
+tests/e2e/__pycache__/*

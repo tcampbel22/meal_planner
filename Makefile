@@ -8,9 +8,26 @@ all: build
 logs:
 	@docker logs mealwise_dev
 
-test-set-up:
+test-unit:
 	@echo "-----| $(GREEN)Starting containers in test mode$(RESET) |-----"
-	@docker-compose -f docker-compose.test.yml up -d db
+	@docker-compose -f docker-compose.test.yml up -d db_test
+	@{ \
+        make test-run; \
+        EXIT_CODE=$$?; \
+        make test-down; \
+        exit 0; \
+    }
+
+test-e2e:
+	@echo "-----| $(GREEN)Running e2e tests with selenium$(RESET) |-----"
+	@echo "-----------------------------------------------"
+	@docker-compose -f docker-compose.test.yml build
+	@docker-compose -f docker-compose.test.yml up -d db_test
+	@docker-compose -f docker-compose.test.yml up -d app_test
+
+	@pytest tests/e2e/
+	@echo "-----| $(RED)Tearing down e2e test suite$(RESET) |-----"
+	@docker-compose -f docker-compose.test.yml down -v
 
 test-run:
 	@echo "-----| $(GREEN)Running tests with pytest$(RESET) |-----"
@@ -22,8 +39,6 @@ test-down:
 	@docker-compose -f docker-compose.test.yml down -v
 	@echo "---------------------------------------------"
 	@echo "-----| $(GREEN)Finished!$(RESET) |-----"
-
-test: test-set-up test-run test-down
 
 dev: build
 	@echo "-----| $(GREEN)Starting containers in dev mode$(RESET) |-----"
@@ -38,7 +53,14 @@ build:
 	@docker-compose build --no-cache
 
 clean:
-	@echo "-----| $(RED)Removing meal planner$(RESET) |-----"
-	@docker-compose down
+	@echo "-----| $(RED)Removing meal planner and wiping database$(RESET) |-----"
+	@read -p "⚠️ $(RED) Are you sure you want to permanently delete the DB? $(RESET)(y/N): " confirm; \
+	if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
+		echo "🗑️ $(YELLOW) Deleting databases...  $(RESET)"; \
+		@docker-compose down -v
+		echo "🗑️ $(GREEN) databases deleted...  $(RESET)"; \
+	else \
+		echo "❌ $(GREEN)Aborted. Database not deleted.$(RESET)"; \
+	fi
 
-re: clean build dev
+re: down build dev

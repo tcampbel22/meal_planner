@@ -111,6 +111,7 @@ class TestUserEndpoints:
         assert get_users_length(session) == 12
         users = get_all_users(session)
         id = users[0].id
+        print(f"DEBUG: id-{id}, user: {users[0].username}")
         res = client.delete(f"{USER_URL}{id}", headers=auth_headers)
         assert res.status_code == 204
         assert get_users_length(session) == 11

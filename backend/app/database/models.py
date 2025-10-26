@@ -15,8 +15,14 @@ class Users(SQLModel, table=True):
     created_date: datetime = Field(
         default_factory=lambda: datetime.now(tz=timezone.utc)
     )
-    recipes: list["Recipes"] = Relationship(back_populates="user")
-    mealplans: list["MealPlans"] = Relationship(back_populates="user")
+    recipes: list["Recipes"] = Relationship(
+        back_populates="user",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
+    )
+    mealplans: list["MealPlans"] = Relationship(
+        back_populates="user",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
+    )
 
 
 class MealPlanRecipeLink(SQLModel, table=True):

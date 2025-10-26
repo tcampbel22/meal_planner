@@ -18,7 +18,6 @@ class RecipeCreate(RecipeBase):
 
 
 class RecipeOut(RecipeBase):
-    id: uuid.UUID
     user_id: uuid.UUID
     created_date: datetime.datetime
     url: Optional[str] = None

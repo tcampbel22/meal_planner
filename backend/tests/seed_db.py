@@ -6,16 +6,6 @@ from sqlalchemy import select
 def seed_users(session):
     created_users = []
 
-    bob_user = Users(
-        username="bob",
-        email="bob@hello.fi",
-        password=hash_password("12345"),
-        recipes=[],
-        mealplans=[],
-    )
-    session.add(bob_user)
-    created_users.append(bob_user)
-
     for i in range(1, 12):
         db_user = Users(
             username=f"user{i}",
@@ -27,11 +17,19 @@ def seed_users(session):
         session.add(db_user)
         created_users.append(db_user)
 
-    session.commit()
-    for user in created_users:
-        session.refresh(user)
-
     return created_users
+
+
+def seed_one_user(session):
+    bob_user = Users(
+        username="bob",
+        email="bob@hello.fi",
+        password=hash_password("12345"),
+        recipes=[],
+        mealplans=[],
+    )
+    session.add(bob_user)
+    return bob_user
 
 
 def seed_recipes(session):
@@ -65,8 +63,4 @@ def seed_recipes(session):
     ]
 
     session.add_all(recipes_to_create)
-    session.commit()
-    for recipe in recipes_to_create:
-        session.refresh(recipe)
-
     return recipes_to_create

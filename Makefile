@@ -56,11 +56,11 @@ clean:
 	@echo "-----| $(RED)Removing meal planner and wiping database$(RESET) |-----"
 	@read -p "⚠️ $(RED) Are you sure you want to permanently delete the DB? $(RESET)(y/N): " confirm; \
 	if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
-		echo "🗑️ $(YELLOW) Deleting databases...  $(RESET)"; \
-		@docker-compose down -v
-		echo "🗑️ $(GREEN) databases deleted...  $(RESET)"; \
+		echo "🗑️ $(YELLOW) Removing containers and database volumes...  $(RESET)"; \
+		docker-compose down -v
+		echo "🗑️ $(GREEN) Containers and database volumes removed succesfully   $(RESET)"; \
 	else \
-		echo "❌ $(GREEN)Aborted. Database not deleted.$(RESET)"; \
+		echo "❌ $(GREEN)Aborted. Containers and volumes remain intact.$(RESET)"; \
 	fi
 
 re: down build dev

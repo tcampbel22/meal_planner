@@ -43,12 +43,11 @@ async def add_new_user(user: AuthUser, session: SessionDep) -> UserOut:
             email=user.email,
         )
         session.add(db_user)
-        session.commit()
+        session.flush()
         session.refresh(db_user)
         safe_user = db_user.model_dump(exclude={"password"})
         return safe_user
     except IntegrityError as e:
-        session.rollback()
         err_message = str(e.orig)
 
         if "username_key" in err_message:
@@ -58,7 +57,6 @@ async def add_new_user(user: AuthUser, session: SessionDep) -> UserOut:
         else:
             raise DuplicateException("Duplicate value error")
     except Exception as e:
-        session.rollback()
         raise DatabaseOperationException(
             f"Failed to create user {user.username}: {e}"
         )
@@ -70,11 +68,9 @@ async def delete_user_by_id(id: uuid.UUID, session: SessionDep) -> None:
         if not user:
             raise UserNotFoundException(f"User with {id} not found")
         session.delete(user)
-        session.commit()
     except UserNotFoundException:
         raise
     except Exception as e:
-        session.rollback()
         raise DatabaseOperationException(
             f"Failed to delete user {user.username}: str{e}"
         )

@@ -2,8 +2,8 @@ AUTH_URL = "/api/auth/"
 USER_URL = "/api/users/"
 
 
-class TestAuthentication:
-    def test_login_user(self, client):
+class TestAuth:
+    def test_login_user(self, client, create_one_user):
         email = "bob@hello.fi"
         password = "12345"
 
@@ -16,7 +16,7 @@ class TestAuthentication:
         assert "access_token" in res.json()
         assert res.json()["token_type"] == "bearer"
 
-    def test_logout_user(self, client, auth_headers):
+    def test_logout_user(self, client, auth_headers, create_one_user):
         email = "bob@hello.fi"
         password = "12345"
 
@@ -33,7 +33,7 @@ class TestAuthentication:
         assert res.status_code == 200
         assert res.json() == {"message": "User bob logged out"}
 
-    def test_missing_password(self, client):
+    def test_missing_password(self, client, create_one_user):
         res = client.post(
             f"{AUTH_URL}token",
             data={"username": "bob@hello.fi"},
@@ -41,7 +41,7 @@ class TestAuthentication:
         )
         assert res.status_code == 422
 
-    def test_missing_email(self, client):
+    def test_missing_email(self, client, create_one_user):
         res = client.post(
             f"{AUTH_URL}token",
             data={"password": "12345"},
@@ -49,7 +49,7 @@ class TestAuthentication:
         )
         assert res.status_code == 422
 
-    def test_user_not_found(self, client):
+    def test_user_not_found(self, client, create_one_user):
         res = client.post(
             f"{AUTH_URL}token",
             data={"username": "zob@hello.fi", "password": "12345"},
@@ -57,7 +57,7 @@ class TestAuthentication:
         )
         assert res.status_code == 404
 
-    def test_incorrect_password(self, client):
+    def test_incorrect_password(self, client, create_one_user):
         res = client.post(
             f"{AUTH_URL}token",
             data={"username": "bob@hello.fi", "password": "12345545456"},
@@ -69,7 +69,7 @@ class TestAuthentication:
             "detail": "Invalid password or email",
         }
 
-    def test_invalid_password(self, client):
+    def test_invalid_password(self, client, create_one_user):
         res = client.post(
             f"{AUTH_URL}token",
             data={"username": "bob@hello.fi", "password": "12"},
@@ -77,7 +77,7 @@ class TestAuthentication:
         )
         assert res.status_code == 422
 
-    def test_invalid_email(self, client):
+    def test_invalid_email(self, client, create_one_user):
         res = client.post(
             f"{AUTH_URL}token",
             data={"username": "bobhello.fi", "password": "12234"},
@@ -85,7 +85,9 @@ class TestAuthentication:
         )
         assert res.status_code == 422
 
-    def test_expired_token(self, client, monkeypatch, auth_headers):
+    def test_expired_token(
+        self, client, monkeypatch, auth_headers, create_one_user
+    ):
         from jwt.exceptions import ExpiredSignatureError
         import jwt
 

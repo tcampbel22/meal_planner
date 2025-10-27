@@ -34,5 +34,4 @@ async def generate_mealplan(
         print(final_mealplan)
 
     except Exception as e:
-        session.rollback()
         raise DatabaseOperationException(f"Failed to generate mealplan: {e}")

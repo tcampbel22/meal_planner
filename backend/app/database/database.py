@@ -58,8 +58,15 @@ def shutdown():
 
 
 def get_session():
-    with Session(get_engine()) as session:
+    session = Session(get_engine())
+    try:
         yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
 
 SessionDep = Annotated[Session, Depends(get_session)]

@@ -56,16 +56,14 @@ async def add_new_recipe(
             default_portion=recipe.default_portion,
         )
         session.add(new_recipe)
-        session.commit()
+        session.flush()
         session.refresh(new_recipe)
 
         return new_recipe
 
     except IntegrityError:
-        session.rollback()
         raise DuplicateException("Recipe has already been added for this user")
     except Exception as e:
-        session.rollback()
         raise DatabaseOperationException(
             f"Failed to add recipe {recipe.name}: {e}"
         )
@@ -80,7 +78,6 @@ async def get_all_user_recipes(
             raise UserNotFoundException(f"User with {user.id} not found")
         return user.recipes
     except Exception as e:
-        session.rollback()
         raise DatabaseOperationException(
             f"Failed to get user {user.username}: {e}"
         )
